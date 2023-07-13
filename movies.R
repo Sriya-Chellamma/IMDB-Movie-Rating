@@ -1,0 +1,193 @@
+setwd("C:/Users/Ramachandran/Desktop/Tableau Docs- BBL/Movies")
+movies=read.csv("movie_metadata.csv")
+data("movies")
+str(movies)
+library(ggplot2)
+install.packages("ggrepel")
+library(ggrepel)
+install.packages("ggthemes")
+library(ggthemes)
+library(scales)
+library(dplyr)
+install.packages("VIM")
+library(VIM)
+library(data.table)
+install.packages("formattable")
+library("formattable")
+install.packages("plotly")
+library(plotly)
+library(corrplot)
+install.packages("GGally")
+library(GGally)
+install.packages("caret")
+library(caret)
+library(car)
+setwd("C:/Users/Ramachandran/Desktop/Tableau Docs- BBL/Movies")
+movies=read.csv("movie_metadata.csv")
+data("movies")
+str(movies)
+sum(duplicated(movies))
+IMDB <- movies[!duplicated(movies),]
+str(IMDB)
+library(stringr)
+IMDB$movie_title <- gsub("Â", "",as.character(factor(IMDB$movie_title)))
+str_trim(IMDB$movie_title, side = "right")
+head(IMDB$genres)
+genres.df <- as.data.frame(IMDB[,c("genres","imdb_score")])
+head(genres.df)
+genres.df$Action <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Action") 1 else 0)
+genres.df$Adventure <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Adventure") 1 else 0)
+genres.df$Animation <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Animation") 1 else 0)
+genres.df$Biography <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Biography") 1 else 0)
+genres.df$Comedy <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Comedy") 1 else 0)
+genres.df$Crime <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Crime") 1 else 0)
+genres.df$Documentary <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Documentary") 1 else 0)
+genres.df$Drama <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Drama") 1 else 0)
+genres.df$Famliy <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Family") 1 else 0)
+genres.df$Fantasy <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Fantasy") 1 else 0)
+genres.df$Film-Noir <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Film-Noir") 1 else 0)
+genres.df$History <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "History") 1 else 0)
+genres.df$Horror <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Horror") 1 else 0)
+genres.df$Musical <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Musical") 1 else 0)
+genres.df$Mystery <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Mystery") 1 else 0)
+genres.df$News <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "News") 1 else 0)
+genres.df$Romance <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Romance") 1 else 0)
+genres.df$Sci-Fi <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Sci-Fi") 1 else 0)
+genres.df$Short <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Short") 1 else 0)
+genres.df$Sport <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Sport") 1 else 0)
+genres.df$Thriller <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Thriller") 1 else 0)
+genres.df$War <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "War") 1 else 0)
+genres.df$Western <- sapply(1:length(genres.df$genres),function(x)
+  if(genres.df[x,1] %like% "Western") 1 else 0)
+means <- rep(0,23)
+for (i in 1:23) {
+  means[i] <- mean(genres.df$imdb_score[genres.df[i+2]==1])
+}
+barplot(means, main = "Average imdb scores for different genres")
+IMDB <- subset(IMDB,select = -c(genres))
+head(IMDB)
+str(IMDB)
+colSums(sapply(IMDB,is.na))
+IMDB <- IMDB[!is.na(IMDB$gross),]
+IMDB <- IMDB[!is.na(IMDB$budget),]
+dim(IMDB)
+sum(complete.cases(IMDB))
+colSums(sapply(IMDB,is.na))
+IMDB <- subset(IMDB,select = -c(aspect_ratio))
+head(IMDB)
+colnames(IMDB)
+IMDB$facenumber_in_poster[is.na(IMDB$facenumber_in_poster)] <- round(mean
+                                                                     (IMDB$facenumber_in_poster,na.rm=TRUE))
+colSums(sapply(IMDB,is.na))
+IMDB$duration[is.na(IMDB$duration)]<- round(mean(IMDB$duration))
+IMDB$actor_1_facebook_likes[is.na(IMDB$actor_1_facebook_likes)]<- round(mean(IMDB$actor_1_facebook_likes,na.rm = TRUE))
+IMDB$actor_2_facebook_likes[is.na(IMDB$actor_2_facebook_likes)]<-round(mean(IMDB$actor_2_facebook_likes,na.rm = TRUE))
+IMDB$actor_3_facebook_likes[is.na(IMDB$actor_3_facebook_likes)]<-round(mean(IMDB$actor_3_facebook_likes,na.rm = TRUE))
+IMDB$num_critic_for_reviews[is.na(IMDB$num_critic_for_reviews)]<-round(mean(IMDB$num_critic_for_reviews,na.rm = TRUE))
+IMDB$duration[is.na(IMDB$duration)]<-round(mean(IMDB$duration,na.rm = TRUE))
+colSums(sapply(IMDB,is.na))
+table(IMDB$content_rating)
+str(IMDB)
+IMDB[,c(5,6,8,13,24,26)][IMDB[,c(5,6,8,13,24,26)] == 0] <- NA
+IMDB$content_rating[IMDB$content_rating == "M"] <- "PG"
+IMDB$content_rating[IMDB$content_rating == "GP"] <- "PG"
+IMDB$content_rating[IMDB$content_rating == "X"] <- "NC-17"
+IMDB$content_rating[IMDB$content_rating == "Approved"] <- "R"
+IMDB$content_rating[IMDB$content_rating == "Not Rated"] <- "R"
+IMDB$content_rating[IMDB$content_rating == "Passed"] <- "R"
+IMDB$content_rating[IMDB$content_rating == "Unrated"] <- "R"
+IMDB$content_rating=as.factor(IMDB$content_rating)
+table(IMDB$content_rating)
+IMDB <- IMDB[!(IMDB$content_rating %in% ""),]
+table(IMDB$content_rating)
+IMDB <- IMDB[!IMDB$content_rating %in% "0",]
+table(IMDB$content_rating)
+IMDB <- IMDB %>% mutate(profit = gross-budget,return_on_investment_perc=(profit/budget)*100)
+colnames(IMDB)
+head(IMDB)
+table(IMDB$color)
+IMDB <- subset(IMDB,select = -c(color))
+table(IMDB$language)
+IMDB<-subset(IMDB,select = -c(language))
+table(IMDB$country)
+levels(IMDB$country)<-c(levels(IMDB$country),"Others")
+IMDB$country[(IMDB$country !="USA")&(IMDB$country !="UK")] <- "Others"
+table(IMDB$country)
+IMDB$country=as.factor(IMDB$country)
+library(ggplot2)
+ggplot(IMDB,aes(IMDB$title_year))+geom_bar()+theme(plot.title=element_text(hjust=0.5))
+ggplot(IMDB,aes(IMDB$title_year))+geom_bar()
+IMDB<-IMDB[IMDB$title_year>="1980",]
+colnames(IMDB)
+IMDB %>% filter(IMDB$title_year>=1980) %>% arrange(desc(profit)) %>% 
+  top_n(20,profit) %>% ggplot(aes(budget/1000000,profit/1000000))+geom_point()+
+  geom_smooth()+geom_text_repel(aes(label=movie_title))+theme(plot.title = element_text(hjust = 0.5))
+IMDB %>% filter(IMDB$title_year>=1980) %>% arrange(desc(profit)) %>% top_n(20,profit) %>% 
+  ggplot(aes(budget/1000000,return_on_investment_perc))+geom_point()+geom_smooth()+
+    geom_text_repel(aes(label=movie_title,font=.5))
+IMDB %>% group_by(director_name) %>% summarise(avg_imdb=mean(imdb_score)) %>% 
+  arrange(desc(avg_imdb)) %>% top_n(20,avg_imdb) %>%
+  formattable(list(avg_imdb = color_bar("orange")), align = 'l')
+IMDB %>% top_n(20,profit) %>% ggplot(aes(imdb_score,gross/10^6,size=profit/10^6,
+                                         color=content_rating))+geom_point()
+ggplot(IMDB,aes(IMDB$movie_facebook_likes/100000,IMDB$content_rating))+geom_point()
+sum(uniqueN(IMDB$director_name))
+sum(uniqueN(IMDB[,c("actor_1_name","actor_2_name","actor_3_name")]))
+str(IMDB) 
+IMDB <- subset(IMDB,select = -c(director_name,actor_1_name,actor_2_name,actor_3_name,
+                                movie_imdb_link,plot_keywords,return_on_investment_perc,profit))
+str(IMDB)
+ggcorr(IMDB,label = TRUE,label_round = 2,label_size = 3.5,size=2,hjust=.85)+
+  ggtitle("Correlation Heatmap")+ theme(plot.title = element_text(hjust=0.5))
+IMDB$other_actor_fb_likes <- IMDB$actor_2_facebook_likes+IMDB$actor_3_facebook_likes
+IMDB$critic_review_ratio <- IMDB$num_critic_for_reviews/IMDB$num_user_for_reviews
+str(IMDB)
+IMDB <- subset(IMDB,select = -c(actor_2_facebook_likes,actor_3_facebook_likes,
+                                num_critic_for_reviews,num_user_for_reviews,
+                                cast_total_facebook_likes))
+str(IMDB)
+ggcorr(IMDB,label = TRUE,label_round = 2,label_size = 4,size=3,hjust=.85)+
+  ggtitle("Correlation Heatmap")+theme(plot.title = element_text(hjust=0.5))
+head(IMDB)
+str(IMDB)
+IMDB <- subset(IMDB,select = -c(movie_title))
+str(IMDB)
+IMDB$director_facebook_likes=as.numeric(IMDB$director_facebook_likes)
+IMDB$gross=as.numeric(IMDB$gross)
+IMDB$title_year=as.numeric(IMDB$title_year)
+IMDB$num_voted_users=as.numeric(IMDB$num_voted_users)
+IMDB$movie_facebook_likes=as.numeric(IMDB$movie_facebook_likes)
+str(IMDB)
+IMDB$budget=IMDB$budget/1000000
+IMDB$gross=IMDB$gross/1000000
+head(IMDB)
+class(IMDB$imdb_score)
+IMDB$imdb_score=as.factor(IMDB$imdb_score)
+IMDB
+model=lm(IMDB$imdb_score~.,IMDB)
+summary(model1)
+model2=glm(imdb_score~critic_review_ratio+budget+gross+director_facebook_likes
+           +actor_1_facebook_likes+movie_facebook_likes+content_rating,
+           family = binomial(),IMDB)
